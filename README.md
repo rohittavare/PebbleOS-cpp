@@ -13,3 +13,6 @@ This repo is an entire fork of the PebbleOS repository, but the `sdk/` and `waft
 4. build the SDK tools: `./build_sdk.sh` *note: the build script only runs for Emery, Flint & Gabbro platforms (Time 2, 2 Duo, Round 2)*
 5. install the locally built sdk: `pebble sdk install --tintin <path-to-repo>`
 6. profit: `pebble clean && pebble build --sdk tintin`
+
+## Acknowledgements
+Thanks [imax9000](https://github.com/imax9000) for providing code snippets & pointers
