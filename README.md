@@ -1,33 +1,15 @@
-<p align="center">
-  <img src="docs/_static/images/logo.svg">
-</p>
+# PebbleOS - CPP
 
-<p align="center">
- PebbleOS 
-</p>
+Adding support for compiling c++ programs for the Pebble SDK (supports both c & c++ programs)
+*note: this repository is a work in progress*
 
-<p align="center">
-  <a href="https://github.com/coredevices/PebbleOS/actions/workflows/build-firmware.yml?query=branch%3Amain"><img src="https://github.com/coredevices/PebbleOS/actions/workflows/build-firmware.yml/badge.svg?branch=main"></a>
-  <a href="https://pebbleos-core.readthedocs.io/en/latest"><img src="https://readthedocs.org/projects/pebbleos-core/badge/?version=latest&style=flat"></a>
-  <a href="https://forum.repebble.com/"><img src="https://img.shields.io/discourse/posts?server=https%3A%2F%2Fforum.repebble.com&label=forum"></a>
-</p>
+## Contents
+This repo is an entire fork of the PebbleOS repository, but the `sdk/` and `waftools/` directories are what's mostly important
 
-## Resources
-
-Here's a quick summary of resources to help you find your way around:
-
-### Getting Started
-
-- 📖 [Documentation](https://pebbleos-core.readthedocs.io/en/latest)
-- 🚀 [Prerequisites Guide](https://pebbleos-core.readthedocs.io/en/latest/development/getting_started.html)
-
-### Code and Development
-
-- ⌚ [Source Code Repository](https://github.com/coredevices/PebbleOS)
-- 🐛 [Issue Tracker](https://github.com/coredevices/PebbleOS/issues)
-- 🤝 [Contribution Guide](CONTRIBUTING.md)
-
-### Community and Support
-
-- 💬 [Discord](https://discordapp.com/invite/aRUAYFN)
-- 👥 [Discussions](https://github.com/coredevices/PebbleOS/discussions)
+## Usage
+1. [install](https://developer.repebble.com/sdk/) the Pebble SDK
+2. clone this repo to your system
+3. follow PebbleOS [set-up guide](https://github.com/rohittavare/PebbleOS-cpp/blob/main/docs/development/getting_started.md) to install prereqs
+4. build the SDK tools: `./build_sdk.sh` *note: the build script only runs for Emery, Flint & Gabbro platforms (Time 2, 2 Duo, Round 2)*
+5. install the locally built sdk: `pebble sdk install --tintin <path-to-repo>`
+6. profit: `pebble clean && pebble build --sdk tintin`
