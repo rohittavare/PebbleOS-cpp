@@ -6,7 +6,7 @@ from waflib.TaskGen import after, feature
 
 
 @after("apply_link")
-@feature("cprogram", "cshlib")
+@feature("cprogram", "cshlib", "cxxprogram")
 def process_ldscript(self):
     if not getattr(self, "ldscript", None) or self.env.CC_NAME != "gcc":
         return

@@ -10,7 +10,7 @@ from waflib.Configure import conf
 from waflib.Errors import WafError
 from waflib.Task import Task
 from waflib.TaskGen import after_method, before_method, feature
-from waflib.Tools import c, c_preproc
+from waflib.Tools import c, c_preproc, cxx
 
 import ldscript, process_bundle, process_headers, process_js, report_memory_usage  # noqa: F401
 from sdk_helpers import (
@@ -33,6 +33,7 @@ def options(opt):
     :return: N/A
     """
     opt.load("gcc")
+    opt.load("gxx")
     opt.add_option(
         "-d",
         "--debug",
@@ -162,7 +163,7 @@ def _wrap_c_preproc_scan(task):
     return nodes, names
 
 
-@feature("c")
+@feature("c", "cxx")
 @before_method("process_source")
 def setup_pebble_c(task_gen):
     """
@@ -230,9 +231,9 @@ def setup_pebble_c(task_gen):
             )
 
 
-@feature("c")
+@feature("c", "cxx")
 @after_method("process_source")
-def fix_pebble_h_dependencies(task_gen):
+def fix_pebble_h_c_dependencies(task_gen):
     """
     This method is called before all of the c aliases (objects, shlib, stlib, program, etc) and
     ensures that the _wrap_c_preproc_scan method is run for all c tasks.
@@ -240,16 +241,16 @@ def fix_pebble_h_dependencies(task_gen):
     :return: N/A
     """
     for task in task_gen.tasks:
-        if type(task) == c.c:
+        if type(task) in [c.c, cxx.cxx]:
             # Swap out the bound member function for our own
             task.scan = types.MethodType(_wrap_c_preproc_scan, task)
 
 
-@feature("pebble_cprogram")
+@feature("pebble_cxxprogram")
 @before_method("process_source")
-def setup_pebble_cprogram(task_gen):
+def setup_pebble_cxxprogram(task_gen):
     """
-    This method is called before all of the c aliases (objects, shlib, stlib, program, etc) and
+    This method is called before all of the c/cpp aliases (objects, shlib, stlib, program, etc) and
     adds the appinfo.auto.c file to the source file list, adds the SDK pebble library to the lib
     path for the build, sets the linkflags for the build, and specifies the linker script to
     use during the linking step.
@@ -399,13 +400,13 @@ def pbl_bundle(self, *k, **kw):
 def pbl_build(self, *k, **kw):
     """
     This method is bound to the build context and is called by specifying `bld.pbl_build()`. We
-    set the custom features `c`, `cprogram` and `pebble_cprogram` to run when this method is
+    set the custom features `c`, `cxx`, `cxxprogram` and `pebble_cxxprogram` to run when this method is
     invoked. This method is intended to someday replace `pbl_program` and `pbl_worker` so that
     all apps, workers, and libs will run through this method.
     :param self: the BuildContext object
     :param k: none expected
     :param kw:
-        source - the source C files to be built and linked
+        source - the source C & C++ files to be built and linked
         target - the destination binary file for the compiled source
     :return: a task generator instance with keyword arguments specified
     """
@@ -418,10 +419,10 @@ def pbl_build(self, *k, **kw):
         )
 
     if bin_type in ("app", "worker"):
-        kw["features"] = "c cprogram pebble_cprogram memory_usage"
+        kw["features"] = "c cxx cxxprogram pebble_cxxprogram memory_usage"
         kw[bin_type] = kw["target"]
     elif bin_type == "lib":
-        kw["features"] = "c cstlib memory_usage"
+        kw["features"] = "c cxx cxxstlib memory_usage"
         path, name = kw["target"].rsplit("/", 1)
         kw["lib"] = self.path.find_or_declare(path).make_node("lib{}.a".format(name))
 

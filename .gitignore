@@ -66,3 +66,5 @@ artifacts/
 .claude/settings.local.json
 .envrc
 .direnv
+
+PebbleOS-cpp/
