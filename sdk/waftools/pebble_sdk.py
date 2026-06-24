@@ -295,7 +295,7 @@ def build(bld):
 def pbl_program(self, *k, **kw):
     """
     This method is bound to the build context and is called by specifying `bld.pbl_program()`. We
-    set the custom features `c`, `cprogram` and `pebble_cprogram` to run when this method is
+    set the custom features `c`, `cxx`, `cxxprogram` and `pebble_cxxprogram` to run when this method is
     invoked.
     :param self: the BuildContext object
     :param k: none expected
@@ -305,7 +305,7 @@ def pbl_program(self, *k, **kw):
     :return: a task generator instance with keyword arguments specified
     """
     kw["bin_type"] = "app"
-    kw["features"] = "c cprogram pebble_cprogram memory_usage"
+    kw["features"] = "c cxx cxxprogram pebble_cxxprogram memory_usage"
     kw["app"] = kw["target"]
     kw["resources"] = self.path.find_or_declare(self.env.BUILD_DIR).make_node(
         "app_resources.pbpack"
@@ -317,7 +317,7 @@ def pbl_program(self, *k, **kw):
 def pbl_worker(self, *k, **kw):
     """
     This method is bound to the build context and is called by specifying `bld.pbl_worker()`. We set
-    the custom features `c`, `cprogram` and `pebble_cprogram` to run when this method is invoked.
+    the custom features `c`, `cxx`, `cxxprogram` and `pebble_cxxprogram` to run when this method is invoked.
     :param self: the BuildContext object
     :param k: none expected
     :param kw:
@@ -326,6 +326,6 @@ def pbl_worker(self, *k, **kw):
     :return: a task generator instance with keyword arguments specified
     """
     kw["bin_type"] = "worker"
-    kw["features"] = "c cprogram pebble_cprogram memory_usage"
+    kw["features"] = "c cxx cxxprogram pebble_cxxprogram memory_usage"
     kw["worker"] = kw["target"]
     return self(*k, **kw)

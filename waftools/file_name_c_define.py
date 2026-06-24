@@ -9,7 +9,7 @@ stripping the other path components.
 from waflib.TaskGen import feature, after_method
 
 
-@feature("c")
+@feature("c", "cxx")
 @after_method("create_compiled_task")
 def file_name_c_define(self):
     for task in self.tasks:

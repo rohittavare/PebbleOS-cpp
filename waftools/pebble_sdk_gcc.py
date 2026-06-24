@@ -19,15 +19,16 @@ def configure(conf):
     conf.env.AS = CROSS_COMPILE_PREFIX + "gcc"
     conf.env.AR = CROSS_COMPILE_PREFIX + "ar"
     conf.env.CC = CROSS_COMPILE_PREFIX + "gcc"
+    conf.env.CXX = CROSS_COMPILE_PREFIX + "g++"
     conf.env.LD = CROSS_COMPILE_PREFIX + "ld"
     conf.env.SIZE = CROSS_COMPILE_PREFIX + "size"
 
     optimize_flag = "-Os"
 
     conf.load("gcc")
+    conf.load("gxx")
 
     pebble_cflags = [
-        "-std=c99",
         "-mcpu=cortex-m3",
         "-mthumb",
         "-ffunction-sections",
@@ -37,11 +38,13 @@ def configure(conf):
         "-fPIE",
         optimize_flag,
     ]
-    c_warnings = [
+
+    warnings = [
         "-Wall",
         "-Wextra",
         "-Werror",
         "-Wno-unused-parameter",
+        "-Wno-narrowing",
         "-Wno-error=unused-function",
         "-Wno-error=unused-variable",
         "-Wno-error=builtin-declaration-mismatch",
@@ -56,7 +59,13 @@ def configure(conf):
         pebble_cflags.append("-D_TIME_H_")
         # Override time_t to be 32-bit for Pebble compatibility (newer toolchains default to 64-bit)
         pebble_cflags.append("-Dtime_t=long")
-    pebble_cflags.extend(c_warnings)
+
+    pebble_cxxflags = pebble_cflags
+    pebble_cflags.append("-std=c99")
+    
+    pebble_cflags.extend(warnings)
+    pebble_cxxflags.extend(warnings)
+
 
     pebble_linkflags = [
         "-mcpu=cortex-m3",
@@ -64,10 +73,12 @@ def configure(conf):
         "-Wl,--gc-sections",
         "-Wl,--warn-common",
         "-fPIE",
+        "-specs=nosys.specs",
         optimize_flag,
     ]
 
     conf.env.prepend_value("CFLAGS", pebble_cflags)
+    conf.env.prepend_value("CXXFLAGS", pebble_cxxflags)
     conf.env.prepend_value("LINKFLAGS", pebble_linkflags)
     conf.env.SHLIB_MARKER = None
     conf.env.STLIB_MARKER = None
@@ -122,9 +133,11 @@ def pbl_suppress_newer_gcc_warnings(conf):
     ]
     for platform in conf.env.TARGET_PLATFORMS:
         conf.all_envs[platform].append_value("CFLAGS", workaround_flags)
+        conf.all_envs[platform].append_value("CXXFLAGS", workaround_flags)
     # Also apply to the default env so that any task generators using a
     # non-platform env (or envs derived after this point) inherit the flags
     conf.env.append_value("CFLAGS", workaround_flags)
+    conf.env.append_value("CXXFLAGS", workaround_flags)
 
 
 # -----------------------------------------------------------------------------------
