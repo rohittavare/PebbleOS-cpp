@@ -4,6 +4,5 @@
 menu "Applications"
 
 rsource "demo/Kconfig"
-rsource "watch/Kconfig"
 
 endmenu

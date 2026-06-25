@@ -82,6 +82,7 @@ bool mic_start(MicDevice *this, MicDataHandlerCB data_handler, void *context,
     return false;
   }
 
+  PBL_LOG_INFO("QEMU mic stub started (period=%" PRIu32 "ms)", period_ms);
   return true;
 }
 

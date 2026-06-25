@@ -28,6 +28,7 @@
 #include "process_management/app_run_state.h"
 #include "process_management/pebble_process_md.h"
 #include "process_management/process_heap.h"
+#include "process_management/sdk_memory_limits.auto.h"
 #include "process_state/app_state/app_state.h"
 #include "resource/resource.h"
 #include "resource/resource_ids.auto.h"
@@ -53,7 +54,6 @@
 #include "syscall/syscall_internal.h"
 #include "system/logging.h"
 #include "system/passert.h"
-#include "util/math.h"
 #include "util/size.h"
 
 // FreeRTOS stuff
@@ -209,20 +209,18 @@ void prv_dump_start_app_info(const PebbleProcessMd *app_md) {
 static size_t prv_get_app_segment_size(const PebbleProcessMd *app_md) {
   switch (process_metadata_get_app_sdk_type(app_md)) {
     case ProcessAppSDKType_Legacy2x:
-      return CONFIG_APP_RAM_2X_SEGMENT_SIZE;
+      return APP_RAM_2X_SIZE;
     case ProcessAppSDKType_Legacy3x:
-      return CONFIG_APP_RAM_3X_SEGMENT_SIZE;
+      return APP_RAM_3X_SIZE;
     case ProcessAppSDKType_4x:
 #ifdef CONFIG_MODDABLE_XS
       if (app_md->is_moddable_app) {
-        return CONFIG_APP_RAM_4X_SEGMENT_SIZE - (APP_STACK_JS_SIZE - APP_STACK_NORMAL_SIZE);
+        return APP_RAM_4X_SIZE - (APP_STACK_JS_SIZE - APP_STACK_NORMAL_SIZE);
       }
 #endif
-      return CONFIG_APP_RAM_4X_SEGMENT_SIZE;
+      return APP_RAM_4X_SIZE;
     case ProcessAppSDKType_System:
-      // System apps get the largest of the supported environments.
-      return MAX(CONFIG_APP_RAM_2X_SEGMENT_SIZE,
-                 MAX(CONFIG_APP_RAM_3X_SEGMENT_SIZE, CONFIG_APP_RAM_4X_SEGMENT_SIZE));
+      return APP_RAM_SYSTEM_SIZE;
     default:
       WTF;
   }
@@ -234,8 +232,8 @@ static size_t prv_get_app_stack_size(const PebbleProcessMd *app_md) {
     return APP_STACK_JS_SIZE;
   }
 #endif
-  // Only 4x/System apps get the larger stack: their segment (CONFIG_APP_RAM_*)
-  // is sized for it. Legacy 2x/3x apps keep the historical 2 KiB stack to match
+  // Only 4x/System apps get the larger stack: their segment (APP_RAM_SIZES) is
+  // sized for it. Legacy 2x/3x apps keep the historical 2 KiB stack to match
   // their (unchanged) segment sizes.
   switch (process_metadata_get_app_sdk_type(app_md)) {
     case ProcessAppSDKType_Legacy2x:

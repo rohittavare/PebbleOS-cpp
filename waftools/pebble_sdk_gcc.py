@@ -36,6 +36,11 @@ def configure(conf):
         "-fcommon",
         "-g",
         "-fPIE",
+        # the pebble linker script doesn't preserve exception-related sections
+        # which causes unresolved reference issues
+        # so let's omit these features
+        "-fno-exceptions",
+        "-fno-unwind-tables",
         optimize_flag,
     ]
 
