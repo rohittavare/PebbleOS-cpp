@@ -16,7 +16,7 @@ def configure(conf):
     """
     CROSS_COMPILE_PREFIX = "arm-none-eabi-"
 
-    conf.env.AS = CROSS_COMPILE_PREFIX + "gcc"
+    conf.env.AS = CROSS_COMPILE_PREFIX + "g++"
     conf.env.AR = CROSS_COMPILE_PREFIX + "ar"
     conf.env.CC = CROSS_COMPILE_PREFIX + "gcc"
     conf.env.CXX = CROSS_COMPILE_PREFIX + "g++"
@@ -60,7 +60,7 @@ def configure(conf):
         # Override time_t to be 32-bit for Pebble compatibility (newer toolchains default to 64-bit)
         pebble_cflags.append("-Dtime_t=long")
 
-    pebble_cxxflags = pebble_cflags
+    pebble_cxxflags = list(pebble_cflags)
     pebble_cflags.append("-std=c99")
     
     pebble_cflags.extend(warnings)
